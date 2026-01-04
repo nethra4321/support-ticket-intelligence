@@ -1,0 +1,25 @@
+CREATE OR REPLACE DATABASE STI;
+CREATE OR REPLACE SCHEMA STI.PUBLIC;
+
+CREATE OR REPLACE TABLE STI.PUBLIC.RAW_TICKETS (
+  ticket_id STRING,
+  created_at TIMESTAMP_NTZ,
+  customer_id STRING,
+  text STRING,
+  source STRING
+);
+
+CREATE OR REPLACE TABLE STI.PUBLIC.TICKET_PREDICTIONS (
+  ticket_id STRING,
+  model_name STRING,
+  predicted_label STRING,
+  confidence FLOAT,
+  predicted_at TIMESTAMP_NTZ
+);
+
+CREATE OR REPLACE TABLE STI.PUBLIC.TICKET_GPT_OUTPUTS (
+  ticket_id STRING,
+  summary STRING,
+  suggested_reply STRING,
+  generated_at TIMESTAMP_NTZ
+);
