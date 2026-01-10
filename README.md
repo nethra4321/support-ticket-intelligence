@@ -5,7 +5,7 @@ An AI-powered customer support system that automatically classifies, summarizes,
 ### Features
 
 - Auto-classification using BERT + LoRA fine-tuning
-- AI-generated summaries with Mistral or GPT-2
+- AI-generated summaries with Mistral
 - Suggested replies for faster response times
 - Snowflake integration for ticket storage
 
@@ -13,7 +13,7 @@ An AI-powered customer support system that automatically classifies, summarizes,
 
 #### Clone the Repository
 ```bash
-git clone https://github.com/nethra/support-ticket-intelligence.git
+git clone https://github.com/nethra4321/support-ticket-intelligence.git
 cd support-ticket-intelligence
 ```
 
