@@ -5,3 +5,11 @@ snowflake
 snowflake-connector-python==3.12.2
 pandas
 dotenv
+requests 
+transformers 
+torch
+scikit-learn
+datasets
+peft
+pyspark==3.5.1
+pyarrow

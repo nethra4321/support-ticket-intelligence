@@ -10,40 +10,54 @@ import snowflake.connector
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+import getpass
 
-from llm_mistral import mistral_summary_reply
-from llm_gpt2 import gpt2_summary_reply
+load_dotenv(os.path.join(os.path.dirname(__file__), "..", ".env"))
 
-from bert_lora_result import classify
+from backend.llm_mistral import mistral_summary_reply
+from backend.llm_gpt2 import gpt2_summary_reply
+from backend.bert_lora_result import classify
+from backend.llm_gpt5 import gpt5_summary_reply
+from backend.llm_claude import claude_summary_reply
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("sti-api")
 
 
-load_dotenv(os.path.join(os.path.dirname(__file__), "..", ".env"))
-
 SNOWFLAKE_DB = os.environ.get("SNOWFLAKE_DATABASE", "STI")
 SNOWFLAKE_SCHEMA = os.environ.get("SNOWFLAKE_SCHEMA", "PUBLIC")
-
+_snowflake_conn = None
 
 def get_conn():
-    return snowflake.connector.connect(
-        account=os.environ["SNOWFLAKE_ACCOUNT"],
-        user=os.environ["SNOWFLAKE_USER"],
-        password=os.environ["SNOWFLAKE_PASSWORD"],
-        role=os.environ.get("SNOWFLAKE_ROLE"),
-        warehouse=os.environ.get("SNOWFLAKE_WAREHOUSE"),
-        database=SNOWFLAKE_DB,
-        schema=SNOWFLAKE_SCHEMA,
+    global _snowflake_conn
+
+    if _snowflake_conn is not None and not _snowflake_conn.is_closed():
+        return _snowflake_conn
+
+    totp_code = getpass.getpass("Enter Snowflake MFA code: ").strip()
+
+    _snowflake_conn = snowflake.connector.connect(
+        user=os.getenv("SNOWFLAKE_USER"),
+        password=os.getenv("SNOWFLAKE_PASSWORD"),
+        passcode=totp_code,
+        account=os.getenv("SNOWFLAKE_ACCOUNT"),
+        warehouse=os.getenv("SNOWFLAKE_WAREHOUSE"),
+        database=os.getenv("SNOWFLAKE_DATABASE"),
+        schema=os.getenv("SNOWFLAKE_SCHEMA"),
     )
 
+    return _snowflake_conn
 
 def run_llm(model_name: str, text: str) -> Tuple[str, str]:
     m = (model_name or "").lower().strip()
     if m == "mistral":
         return mistral_summary_reply(text)
     if m == "gpt2":
-        return gpt2_summary_reply(text)
+        return gpt2_summary_reply(text)        
+    if m == "gpt5":
+        return gpt5_summary_reply(text)
+    if m == "claude":
+        return claude_summary_reply(text)
     raise HTTPException(status_code=400, detail="model must be 'mistral' or 'gpt2'")
 
 
@@ -104,7 +118,6 @@ def list_tickets(limit: int = 50) -> List[Dict[str, Any]]:
         ]
     finally:
         cur.close()
-        conn.close()
 
 
 @app.get("/tickets/{ticket_id}")
@@ -157,7 +170,6 @@ def get_ticket(ticket_id: str, model: str = "mistral"):
         }
     finally:
         cur.close()
-        conn.close()
 
 
 @app.post("/tickets/{ticket_id}/generate")
@@ -232,7 +244,6 @@ def generate_ticket_ai(ticket_id: str, model: str = "mistral") -> Dict[str, Any]
         }
     finally:
         cur.close()
-        conn.close()
 
 
 @app.post("/tickets/{ticket_id}/classify")
@@ -262,4 +273,4 @@ def classify_ticket(ticket_id: str) -> Dict[str, Any]:
         }
     finally:
         cur.close()
-        conn.close()
+

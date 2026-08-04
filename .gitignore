@@ -10,6 +10,7 @@ __pycache__/
 *.pyo
 *.pyd
 .venv/
+.venv-support/
 venv/
 env/
 pip-wheel-metadata/

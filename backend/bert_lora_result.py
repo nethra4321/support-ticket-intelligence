@@ -4,8 +4,16 @@ import torch
 from transformers import AutoTokenizer, AutoModelForSequenceClassification, AutoConfig
 from peft import PeftModel
 
+# BASE_MODEL = "distilbert-base-uncased"
+# LORA_DIR = "models/bert_lora_classifier" 
 BASE_MODEL = "distilbert-base-uncased"
-LORA_DIR = "models/bert_lora_classifier" 
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+LORA_DIR = os.path.join(
+    BASE_DIR,
+    "models",
+    "bert_lora_classifier",
+)
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
