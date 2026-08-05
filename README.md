@@ -9,7 +9,7 @@ An AI-powered customer support system that automatically classifies, summarizes,
 - Context-aware customer reply generation
 - Multiple LLM support
   - GPT-5
-  - Claude
+  - Claude Sonnet 5
   - Mistral
   - GPT-2
 - Snowflake integration for ticket storage and retrieval
@@ -56,7 +56,6 @@ An AI-powered customer support system that automatically classifies, summarizes,
 ### Database
 - Snowflake
 
----
 
 ## Project Structure
 
